@@ -11,7 +11,8 @@ To get started
 	
 Then edit <tt>rel/files/sys.config</tt> to fit your environment.
 
-* <tt>interface</tt> - set to an available network interface from which to pull a 48-bit mac address as the worker id.
+* <tt>interface</tt> - (optional) network interface from which to pull a 48-bit mac address as the worker id.  If not specified this defaults to eth0.
+* <tt>worker_id</tt> - (optional) explicit worker id which, if present, overrides <tt>interface<tt>.
 * <tt>timestamp_path</tt> - set to a location where flake can periodically save the current time. If flake detects on startup that this file contains timestamps in the future or the distant past, it will refuse to startup. This is to prevent problematic ids from being distributed.
 * <tt>allowable_downtime</tt> - an added safeguard to prevent flake from starting up if it sees it hasn't run in a long period of time according to the system clock since this might be an indication that the clock has been skewed far into the future.
 

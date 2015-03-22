@@ -57,11 +57,7 @@ upgrade() ->
 %% @spec init([]) -> SupervisorTree
 %% @doc supervisor callback.
 init([]) ->
-    If = flake:get_config_value(interface, "eth0"),
-    error_logger:info_msg("starting flake with hardware address of ~p as worker id~n", [If]),
-    {ok,WorkerId} = flake_util:get_if_hw_int(If),
-    error_logger:info_msg("using worker id: ~p~n", [WorkerId]),
-  
+    WorkerId = get_worker_id(),
     FlakeConfig = [
 		   {worker_id, WorkerId}
 		  ],
@@ -102,6 +98,19 @@ init([]) ->
     
     {ok, { {one_for_one, 10, 10}, [Flake, PersistentTimer]} }.
 
+get_worker_id() ->
+    case flake:get_config_value(worker_id, undefined) of
+        undefined ->
+            If = flake:get_config_value(interface, "eth0"),
+            error_logger:info_msg("starting flake with hardware address of ~p as worker id~n", [If]),
+            {ok, WorkerId} = flake_util:get_if_hw_int(If),
+            error_logger:info_msg("using worker id: ~p from interface ~p~n", [WorkerId, If]),
+            WorkerId;
+        WorkerId ->
+            error_logger:info_msg("using worker id: ~p~n", [WorkerId]),
+            WorkerId
+    end.
+    
 check_for_clock_error(true,true) ->
     ok;
 check_for_clock_error(false,_) ->
